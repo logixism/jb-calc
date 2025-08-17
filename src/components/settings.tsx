@@ -143,7 +143,7 @@ export function Settings({ open, onOpenChange }: SettingsProps) {
               className="flex items-center gap-2"
             >
               <Link
-                href="https://github.com/logixism/jb-calculator"
+                href="https://github.com/logixism/jb-calc"
                 target="_blank"
                 rel="noopener noreferrer"
               >
