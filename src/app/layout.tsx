@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "A feature-rich calculator with support for cross-trading for Roblox Jailbreak, powered by JBValues",
     type: "website",
-    url: "https://calc.logix.lol",
+    url: "https://jbcalc.app",
   },
   twitter: {
     card: "summary_large_image",
