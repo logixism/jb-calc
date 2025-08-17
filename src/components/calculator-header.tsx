@@ -15,7 +15,9 @@ export function CalculatorHeader({ onSettingsOpen }: CalculatorHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold">Jailbreak Calculator</h1>
+        <h1 className="text-lg md:text-xl lg:text-3xl font-bold">
+          Jailbreak Calculator
+        </h1>
         <p className="text-muted-foreground">Calculate your item values</p>
       </div>
       <div className="flex items-center gap-2">
