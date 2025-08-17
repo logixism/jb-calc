@@ -34,7 +34,7 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
 
 function fullItemFromCalc(
   calcItem: CalculatorItem,
-  allItems: GameItem[]
+  allItems: GameItem[],
 ): FullItem {
   const item = allItems?.find((item) => item.id === calcItem.id);
 
@@ -50,12 +50,12 @@ function fullItemFromCalc(
 
 export function valueFromCalcItems(
   items: CalculatorItem[],
-  allItems: GameItem[]
+  allItems: GameItem[],
 ) {
   return items.reduce(
     (sum, calcItem) =>
       sum + fullItemFromCalc(calcItem, allItems).value * calcItem.amount,
-    0
+    0,
   );
 }
 
@@ -87,11 +87,6 @@ export function CalculatorController({
     setSaveDialogOpen(true);
   });
 
-  useHotkeys("ctrl+shift+s, cmd+shift+s", (e) => {
-    e.preventDefault();
-    onSettingsOpen?.();
-  });
-
   const { isPending, data: allItems } = useJbvItemQuery();
 
   if (isPending || !allItems) {
@@ -108,7 +103,7 @@ export function CalculatorController({
         return prev.map((calcItem) =>
           calcItem.id === item.id
             ? { ...calcItem, amount: calcItem.amount + quantity }
-            : calcItem
+            : calcItem,
         );
       } else {
         return [...prev, { id: item.id, amount: quantity }];
@@ -128,8 +123,10 @@ export function CalculatorController({
 
     setItems((prev) =>
       prev.map((calcItem) =>
-        calcItem.id === itemId ? { ...calcItem, amount: newQuantity } : calcItem
-      )
+        calcItem.id === itemId
+          ? { ...calcItem, amount: newQuantity }
+          : calcItem,
+      ),
     );
   };
 

@@ -39,7 +39,6 @@ export function CalculatorHeader({
         <Button variant="outline" size="sm" onClick={() => onSettingsOpen?.()}>
           <Settings className="h-4 w-4" />
           Settings
-          <Kbd>⌘⇧S</Kbd>
         </Button>
       </div>
     </div>
