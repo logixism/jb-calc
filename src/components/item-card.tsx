@@ -25,7 +25,7 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
 
   const handleIncrement = (event: React.MouseEvent) => {
     let increment = 1;
-    if (event.shiftKey && event.ctrlKey) {
+    if (event.ctrlKey) {
       increment = 10;
     } else if (event.shiftKey) {
       increment = 5;
@@ -35,7 +35,7 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
 
   const handleDecrement = (event: React.MouseEvent) => {
     let decrement = 1;
-    if (event.shiftKey && event.ctrlKey) {
+    if (event.ctrlKey) {
       decrement = 10;
     } else if (event.shiftKey) {
       decrement = 5;
