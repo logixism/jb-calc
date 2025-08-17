@@ -35,11 +35,11 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
 function fullItemFromCalc(
   calcItem: CalculatorItem,
   allItems: GameItem[],
-): FullItem {
+): FullItem | null {
   const item = allItems?.find((item) => item.id === calcItem.id);
 
   if (!item) {
-    throw new Error(`Item with id ${calcItem.id} not found`);
+    return null;
   }
 
   return {
@@ -52,18 +52,23 @@ export function valueFromCalcItems(
   items: CalculatorItem[],
   allItems: GameItem[],
 ) {
-  return items.reduce(
-    (sum, calcItem) =>
-      sum + fullItemFromCalc(calcItem, allItems).value * calcItem.amount,
-    0,
-  );
+  return items.reduce((sum, calcItem) => {
+    const fullItem = fullItemFromCalc(calcItem, allItems);
+    if (!fullItem) {
+      return sum;
+    }
+    return sum + fullItem.value * calcItem.amount;
+  }, 0);
 }
 
 function deserializeCalcItems(value: string) {
-  return value.split(SERIALIZATION_ITEM_DELIMITER).map((item) => {
-    const [id, amount] = item.split(SERIALIZATION_KEY_DELIMITER);
-    return { id, amount: parseInt(amount) };
-  });
+  return value
+    .split(SERIALIZATION_ITEM_DELIMITER)
+    .filter(Boolean)
+    .map((item) => {
+      const [id, amount] = item.split(SERIALIZATION_KEY_DELIMITER);
+      return { id, amount: parseInt(amount) };
+    });
 }
 
 export function CalculatorController({
@@ -91,6 +96,13 @@ export function CalculatorController({
 
   if (isPending || !allItems) {
     return <div>Loading...</div>;
+  }
+
+  const filteredItems = calculatorItems.filter(
+    (item) => !!fullItemFromCalc(item, allItems),
+  );
+  if (filteredItems.length !== calculatorItems.length) {
+    setItems(filteredItems);
   }
 
   const totalValue = valueFromCalcItems(calculatorItems, allItems);
@@ -158,7 +170,7 @@ export function CalculatorController({
         {calculatorItems.map((calcItem) => (
           <ItemCard
             key={calcItem.id}
-            item={fullItemFromCalc(calcItem, allItems)}
+            item={fullItemFromCalc(calcItem, allItems)!}
             onRemove={removeCalcItem}
             onUpdateQuantity={updateQuantity}
           />
