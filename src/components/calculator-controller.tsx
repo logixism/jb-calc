@@ -14,6 +14,7 @@ import { AddItemCard } from "./add-item-card";
 import { ItemCard } from "./item-card";
 import { useQueryState } from "nuqs";
 import { AddItemDialog } from "./add-item-dialog";
+import { SaveCalculatorDialog } from "./save-calculator-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { useJbvItemQuery } from "@/hooks/use-jbv-item-query";
 
@@ -29,6 +30,33 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
     .map((item) => `${item.id}${SERIALIZATION_KEY_DELIMITER}${item.amount}`)
     .join(SERIALIZATION_ITEM_DELIMITER);
   return mini;
+}
+
+function fullItemFromCalc(
+  calcItem: CalculatorItem,
+  allItems: GameItem[]
+): FullItem {
+  const item = allItems?.find((item) => item.id === calcItem.id);
+
+  if (!item) {
+    throw new Error(`Item with id ${calcItem.id} not found`);
+  }
+
+  return {
+    ...item,
+    amount: calcItem.amount,
+  };
+}
+
+export function valueFromCalcItems(
+  items: CalculatorItem[],
+  allItems: GameItem[]
+) {
+  return items.reduce(
+    (sum, calcItem) =>
+      sum + fullItemFromCalc(calcItem, allItems).value * calcItem.amount,
+    0
+  );
 }
 
 function deserializeCalcItems(value: string) {
@@ -47,6 +75,7 @@ export function CalculatorController({
     serialize: serializeCalcItems,
   });
   const [addItemOpen, setAddItemOpen] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
   useHotkeys("ctrl+a, cmd+a", (e) => {
     e.preventDefault();
@@ -55,32 +84,21 @@ export function CalculatorController({
 
   useHotkeys("ctrl+s, cmd+s", (e) => {
     e.preventDefault();
+    setSaveDialogOpen(true);
+  });
+
+  useHotkeys("ctrl+shift+s, cmd+shift+s", (e) => {
+    e.preventDefault();
     onSettingsOpen?.();
   });
 
   const { isPending, data: allItems } = useJbvItemQuery();
 
-  if (isPending) {
+  if (isPending || !allItems) {
     return <div>Loading...</div>;
   }
 
-  function fullItemFromCalc(calcItem: CalculatorItem): FullItem {
-    const item = allItems?.find((item) => item.id === calcItem.id);
-
-    if (!item) {
-      throw new Error(`Item with id ${calcItem.id} not found`);
-    }
-
-    return {
-      ...item,
-      amount: calcItem.amount,
-    };
-  }
-
-  const totalValue = calculatorItems.reduce(
-    (sum, calcItem) => sum + fullItemFromCalc(calcItem).value * calcItem.amount,
-    0,
-  );
+  const totalValue = valueFromCalcItems(calculatorItems, allItems);
 
   const addCalcItem = (item: GameItem, quantity: number = 1) => {
     setItems((prev) => {
@@ -90,7 +108,7 @@ export function CalculatorController({
         return prev.map((calcItem) =>
           calcItem.id === item.id
             ? { ...calcItem, amount: calcItem.amount + quantity }
-            : calcItem,
+            : calcItem
         );
       } else {
         return [...prev, { id: item.id, amount: quantity }];
@@ -110,10 +128,8 @@ export function CalculatorController({
 
     setItems((prev) =>
       prev.map((calcItem) =>
-        calcItem.id === itemId
-          ? { ...calcItem, amount: newQuantity }
-          : calcItem,
-      ),
+        calcItem.id === itemId ? { ...calcItem, amount: newQuantity } : calcItem
+      )
     );
   };
 
@@ -121,10 +137,17 @@ export function CalculatorController({
     setItems([]);
   };
 
+  const loadCalculator = (items: CalculatorItem[]) => {
+    setItems(items);
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <CalculatorHeader onSettingsOpen={onSettingsOpen} />
+      <CalculatorHeader
+        onSettingsOpen={onSettingsOpen}
+        onSaveOpen={() => setSaveDialogOpen(true)}
+      />
 
       {/* Total Value */}
       <TotalValueCard totalValue={totalValue} onClearAll={clearAll} />
@@ -138,7 +161,7 @@ export function CalculatorController({
         {calculatorItems.map((calcItem) => (
           <ItemCard
             key={calcItem.id}
-            item={fullItemFromCalc(calcItem)}
+            item={fullItemFromCalc(calcItem, allItems)}
             onRemove={removeCalcItem}
             onUpdateQuantity={updateQuantity}
           />
@@ -150,6 +173,14 @@ export function CalculatorController({
         open={addItemOpen}
         onOpenChange={setAddItemOpen}
         onItemSelect={addCalcItem}
+      />
+
+      {/* Save Calculator Dialog */}
+      <SaveCalculatorDialog
+        open={saveDialogOpen}
+        onOpenChange={setSaveDialogOpen}
+        currentItems={calculatorItems}
+        onLoadCalculator={loadCalculator}
       />
     </div>
   );

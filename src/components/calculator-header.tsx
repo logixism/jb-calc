@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Settings } from "lucide-react";
+import { Settings, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
@@ -9,9 +9,13 @@ import Link from "next/link";
 
 interface CalculatorHeaderProps {
   onSettingsOpen?: () => void;
+  onSaveOpen?: () => void;
 }
 
-export function CalculatorHeader({ onSettingsOpen }: CalculatorHeaderProps) {
+export function CalculatorHeader({
+  onSettingsOpen,
+  onSaveOpen,
+}: CalculatorHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -27,10 +31,15 @@ export function CalculatorHeader({ onSettingsOpen }: CalculatorHeaderProps) {
             Need help?
           </Button>
         </Link>
+        <Button variant="outline" size="sm" onClick={() => onSaveOpen?.()}>
+          <Save className="h-4 w-4" />
+          Save
+          <Kbd>⌘S</Kbd>
+        </Button>
         <Button variant="outline" size="sm" onClick={() => onSettingsOpen?.()}>
           <Settings className="h-4 w-4" />
           Settings
-          <Kbd>⌘S</Kbd>
+          <Kbd>⌘⇧S</Kbd>
         </Button>
       </div>
     </div>
