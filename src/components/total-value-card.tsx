@@ -77,7 +77,7 @@ export function TotalValueCard({
                 <Input
                   id="rate"
                   type="number"
-                  defaultValue={0.5}
+                  defaultValue={rate}
                   className="ml-1 w-12 h-5 text-center text-sm rounded-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
                 />
