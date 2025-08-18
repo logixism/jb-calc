@@ -36,7 +36,7 @@ export function TotalValueCard({
 
   const [showCrosstradingUtils, setShowCrosstradingUtils] = useLocalStorage(
     "showCrosstradingUtils",
-    true,
+    true
   );
 
   const adjustedValueWithRate = totalValue * rate;
@@ -78,7 +78,7 @@ export function TotalValueCard({
                   id="rate"
                   type="number"
                   defaultValue={rate}
-                  className="ml-1 w-12 h-5 text-center text-sm rounded-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="ml-1 w-20 h-5 text-center text-sm rounded-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
                 />
                 <span>)</span>
