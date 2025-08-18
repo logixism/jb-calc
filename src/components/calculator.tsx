@@ -3,8 +3,16 @@ import { CalculatorController } from "./calculator-controller";
 
 interface CalculatorProps {
   onSettingsOpen?: () => void;
+  rate: number;
+  setRate: (value: number) => void;
 }
 
-export function Calculator({ onSettingsOpen }: CalculatorProps) {
-  return <CalculatorController onSettingsOpen={onSettingsOpen} />;
+export function Calculator({ onSettingsOpen, rate, setRate }: CalculatorProps) {
+  return (
+    <CalculatorController
+      onSettingsOpen={onSettingsOpen}
+      rate={rate}
+      setRate={setRate}
+    />
+  );
 }

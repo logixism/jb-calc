@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Save,
-  Loader2,
-  Trash2,
-  Download,
-  Upload,
-  Edit,
-  Share,
-  LinkIcon,
-} from "lucide-react";
+import { Save, Loader2, Trash2, Download, Upload, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +9,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +20,7 @@ import { valueFromCalcItems } from "./calculator-controller";
 import { formatValue } from "@/lib/utils";
 import { Badge } from "./ui/badge";
 
-interface SavedCalculator {
+interface SavedCalculatorV1 {
   id: string;
   name: string;
   items: CalculatorItem[];
@@ -38,11 +28,29 @@ interface SavedCalculator {
   updatedAt: string;
 }
 
+interface SavedCalculatorV2 extends SavedCalculatorV1 {
+  version: 2;
+  rate: number;
+}
+
+type SavedCalculator = SavedCalculatorV1 | SavedCalculatorV2;
+
+const CURRENT_SAVE_VERSION = 2 as const;
+type SavedCalculatorVersion = 1 | typeof CURRENT_SAVE_VERSION;
+
+function getSavedCalculatorVersion(
+  calculator: SavedCalculator
+): SavedCalculatorVersion {
+  return "version" in calculator ? calculator.version : 1;
+}
+
 interface SaveCalculatorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentItems: CalculatorItem[];
   onLoadCalculator: (items: CalculatorItem[]) => void;
+  rate: number;
+  onLoadRate: (rate: number) => void;
 }
 
 const STORAGE_KEY = "jb-calculator-saves";
@@ -74,6 +82,8 @@ export function SaveCalculatorDialog({
   onOpenChange,
   currentItems,
   onLoadCalculator,
+  rate,
+  onLoadRate,
 }: SaveCalculatorDialogProps) {
   const [savedCalculators, setSavedCalculators] = useState<SavedCalculator[]>(
     []
@@ -110,6 +120,9 @@ export function SaveCalculatorDialog({
               name: saveName.trim(),
               items: [...currentItems],
               updatedAt: new Date().toISOString(),
+              // Always persist as V2 when updating
+              rate,
+              version: CURRENT_SAVE_VERSION,
             }
           : calc
       );
@@ -127,17 +140,22 @@ export function SaveCalculatorDialog({
                 ...calc,
                 items: [...currentItems],
                 updatedAt: new Date().toISOString(),
+                // Persist as V2 on overwrite
+                rate,
+                version: CURRENT_SAVE_VERSION,
               }
             : calc
         );
       } else {
         // Create new save
-        const newCalculator: SavedCalculator = {
+        const newCalculator: SavedCalculatorV2 = {
           id: Date.now().toString(),
           name: saveName.trim(),
           items: [...currentItems],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          rate,
+          version: CURRENT_SAVE_VERSION,
         };
         updatedCalculators = [...savedCalculators, newCalculator];
       }
@@ -153,6 +171,9 @@ export function SaveCalculatorDialog({
 
   const handleLoad = (calculator: SavedCalculator) => {
     onLoadCalculator(calculator.items);
+    if ("rate" in calculator && typeof calculator.rate === "number") {
+      onLoadRate(calculator.rate);
+    }
     onOpenChange(false);
   };
 
@@ -337,8 +358,11 @@ export function SaveCalculatorDialog({
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">
-                            {calculator.name}
+                          <p className="font-medium truncate flex items-center gap-2">
+                            <span>{calculator.name}</span>
+                            <Badge variant="outline">
+                              v{getSavedCalculatorVersion(calculator)}
+                            </Badge>
                           </p>
                           <span className="text-xs text-muted-foreground">
                             {calculator.items.length} items

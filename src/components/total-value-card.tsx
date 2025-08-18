@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowUpDown, ListCollapse, Trash2 } from "lucide-react";
+import React from "react";
+import { ArrowUpDown, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Kbd } from "@/components/ui/kbd";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatValue } from "@/lib/utils";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Toggle } from "./ui/toggle";
-import { Switch } from "./ui/switch";
-import { useQueryState } from "nuqs";
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,18 +18,16 @@ import { useLocalStorage } from "usehooks-ts";
 interface TotalValueCardProps {
   onClearAll: () => void;
   totalValue: number;
+  rate: number;
+  onChangeRate: (value: number) => void;
 }
 
 export function TotalValueCard({
   totalValue,
   onClearAll,
+  rate,
+  onChangeRate,
 }: TotalValueCardProps) {
-  const [rate, setRate] = useQueryState("rate", {
-    defaultValue: 0.5,
-    parse: (value) => parseFloat(value),
-    serialize: (value) => value.toString(),
-  });
-
   const [showCrosstradingUtils, setShowCrosstradingUtils] = useLocalStorage(
     "showCrosstradingUtils",
     true
@@ -77,9 +71,11 @@ export function TotalValueCard({
                 <Input
                   id="rate"
                   type="number"
-                  defaultValue={rate}
+                  value={rate}
                   className="ml-1 w-20 h-5 text-center text-sm rounded-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    onChangeRate(parseFloat(e.target.value) || 0)
+                  }
                 />
                 <span>)</span>
               </div>

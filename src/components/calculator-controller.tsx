@@ -2,12 +2,7 @@
 
 import React, { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import {
-  CalculatorItem,
-  FullItem,
-  GameItem,
-  mapJbvResponse,
-} from "@/lib/items";
+import { CalculatorItem, FullItem, GameItem } from "@/lib/items";
 import { CalculatorHeader } from "./calculator-header";
 import { TotalValueCard } from "./total-value-card";
 import { AddItemCard } from "./add-item-card";
@@ -15,12 +10,13 @@ import { ItemCard } from "./item-card";
 import { useQueryState } from "nuqs";
 import { AddItemDialog } from "./add-item-dialog";
 import { SaveCalculatorDialog } from "./save-calculator-dialog";
-import { useQuery } from "@tanstack/react-query";
 import { useJbvItemQuery } from "@/hooks/use-jbv-item-query";
 import { forceCheck } from "react-lazyload";
 
 interface CalculatorControllerProps {
   onSettingsOpen?: () => void;
+  rate: number;
+  setRate: (value: number) => void;
 }
 
 const SERIALIZATION_KEY_DELIMITER = ",";
@@ -35,7 +31,7 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
 
 function fullItemFromCalc(
   calcItem: CalculatorItem,
-  allItems: GameItem[],
+  allItems: GameItem[]
 ): FullItem | null {
   const item = allItems?.find((item) => item.id === calcItem.id);
 
@@ -51,7 +47,7 @@ function fullItemFromCalc(
 
 export function valueFromCalcItems(
   items: CalculatorItem[],
-  allItems: GameItem[],
+  allItems: GameItem[]
 ) {
   return items.reduce((sum, calcItem) => {
     const fullItem = fullItemFromCalc(calcItem, allItems);
@@ -74,6 +70,8 @@ function deserializeCalcItems(value: string) {
 
 export function CalculatorController({
   onSettingsOpen,
+  rate,
+  setRate,
 }: CalculatorControllerProps) {
   const [calculatorItems, setItems] = useQueryState<CalculatorItem[]>("", {
     defaultValue: [],
@@ -104,7 +102,7 @@ export function CalculatorController({
   }
 
   const filteredItems = calculatorItems.filter(
-    (item) => !!fullItemFromCalc(item, allItems),
+    (item) => !!fullItemFromCalc(item, allItems)
   );
   if (filteredItems.length !== calculatorItems.length) {
     setItems(filteredItems);
@@ -121,7 +119,7 @@ export function CalculatorController({
         return prev.map((calcItem) =>
           calcItem.id === item.id
             ? { ...calcItem, amount: calcItem.amount + quantity }
-            : calcItem,
+            : calcItem
         );
       } else {
         return [...prev, { id: item.id, amount: quantity }];
@@ -143,10 +141,8 @@ export function CalculatorController({
 
     setItems((prev) =>
       prev.map((calcItem) =>
-        calcItem.id === itemId
-          ? { ...calcItem, amount: newQuantity }
-          : calcItem,
-      ),
+        calcItem.id === itemId ? { ...calcItem, amount: newQuantity } : calcItem
+      )
     );
     forceCheckOnAnim();
   };
@@ -170,7 +166,12 @@ export function CalculatorController({
       />
 
       {/* Total Value */}
-      <TotalValueCard totalValue={totalValue} onClearAll={clearAll} />
+      <TotalValueCard
+        totalValue={totalValue}
+        onClearAll={clearAll}
+        rate={rate}
+        onChangeRate={setRate}
+      />
 
       {/* Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -201,6 +202,8 @@ export function CalculatorController({
         onOpenChange={setSaveDialogOpen}
         currentItems={calculatorItems}
         onLoadCalculator={loadCalculator}
+        rate={rate}
+        onLoadRate={setRate}
       />
     </div>
   );
