@@ -17,6 +17,7 @@ import { AddItemDialog } from "./add-item-dialog";
 import { SaveCalculatorDialog } from "./save-calculator-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { useJbvItemQuery } from "@/hooks/use-jbv-item-query";
+import { forceCheck } from "react-lazyload";
 
 interface CalculatorControllerProps {
   onSettingsOpen?: () => void;
@@ -34,7 +35,7 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
 
 function fullItemFromCalc(
   calcItem: CalculatorItem,
-  allItems: GameItem[],
+  allItems: GameItem[]
 ): FullItem | null {
   const item = allItems?.find((item) => item.id === calcItem.id);
 
@@ -50,7 +51,7 @@ function fullItemFromCalc(
 
 export function valueFromCalcItems(
   items: CalculatorItem[],
-  allItems: GameItem[],
+  allItems: GameItem[]
 ) {
   return items.reduce((sum, calcItem) => {
     const fullItem = fullItemFromCalc(calcItem, allItems);
@@ -82,6 +83,10 @@ export function CalculatorController({
   const [addItemOpen, setAddItemOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
+  function forceCheckOnAnim() {
+    window.requestAnimationFrame(forceCheck);
+  }
+
   useHotkeys("ctrl+a, cmd+a", (e) => {
     e.preventDefault();
     setAddItemOpen(true);
@@ -99,10 +104,11 @@ export function CalculatorController({
   }
 
   const filteredItems = calculatorItems.filter(
-    (item) => !!fullItemFromCalc(item, allItems),
+    (item) => !!fullItemFromCalc(item, allItems)
   );
   if (filteredItems.length !== calculatorItems.length) {
     setItems(filteredItems);
+    forceCheckOnAnim();
   }
 
   const totalValue = valueFromCalcItems(calculatorItems, allItems);
@@ -115,16 +121,18 @@ export function CalculatorController({
         return prev.map((calcItem) =>
           calcItem.id === item.id
             ? { ...calcItem, amount: calcItem.amount + quantity }
-            : calcItem,
+            : calcItem
         );
       } else {
         return [...prev, { id: item.id, amount: quantity }];
       }
     });
+    forceCheckOnAnim();
   };
 
   const removeCalcItem = (itemId: string) => {
     setItems((prev) => prev.filter((calcItem) => calcItem.id !== itemId));
+    forceCheckOnAnim();
   };
 
   const updateQuantity = (itemId: string, newQuantity: number) => {
@@ -135,19 +143,20 @@ export function CalculatorController({
 
     setItems((prev) =>
       prev.map((calcItem) =>
-        calcItem.id === itemId
-          ? { ...calcItem, amount: newQuantity }
-          : calcItem,
-      ),
+        calcItem.id === itemId ? { ...calcItem, amount: newQuantity } : calcItem
+      )
     );
+    forceCheckOnAnim();
   };
 
   const clearAll = () => {
     setItems([]);
+    forceCheckOnAnim();
   };
 
   const loadCalculator = (items: CalculatorItem[]) => {
     setItems(items);
+    forceCheckOnAnim();
   };
 
   return (

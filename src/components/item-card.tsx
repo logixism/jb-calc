@@ -5,11 +5,11 @@ import { Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
-import { FullItem, GameItem } from "@/lib/items";
+import { FullItem } from "@/lib/items";
 import { formatValue } from "@/lib/utils";
 import ImageOrPlaceholder from "./image-or-placeholder";
-import { Input } from "./ui/input";
+import LazyLoad from "react-lazyload";
+import { Skeleton } from "./ui/skeleton";
 
 interface ItemCardProps {
   item: FullItem;
@@ -48,78 +48,85 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
   };
 
   return (
-    <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <ImageOrPlaceholder
-          src={item.imageUrl}
-          alt={item.name}
-          width={32}
-          height={32}
-          style={{
-            opacity: `${getItemOpacity(item.amount)}%`,
-          }}
-          className={`w-full h-full object-cover scale-110 blur-3xl`}
-        />
-        <div className="absolute inset-0 bg-background/60" />
-      </div>
-      <CardHeader className="pb-2 relative z-10">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg font-semibold">{item.name}</CardTitle>
-            <Badge variant="outline" className="mt-1 rounded-md">
-              {item.category}
-            </Badge>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onRemove(item.id)}
-            className="h-7 w-7 rounded-sm p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-4 relative z-10">
-        <div className="relative aspect-video overflow-hidden rounded-lg flex items-center justify-center">
+    <LazyLoad
+      unmountIfInvisible
+      placeholder={<div className="h-81 w-71"></div>}
+    >
+      <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <ImageOrPlaceholder
             src={item.imageUrl}
             alt={item.name}
-            width={256}
-            height={256}
-            className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+            width={32}
+            height={32}
+            style={{
+              opacity: `${getItemOpacity(item.amount)}%`,
+            }}
+            className={`w-full h-full object-cover scale-110 blur-3xl`}
           />
+          <div className="absolute inset-0 bg-background/60" />
         </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-primary">
-            {formatValue(item.value * item.amount)}
-          </span>
-
-          <div className="flex items-center border-muted-foreground/10 gap-2 border bg-accent/40 rounded-xl px-2 py-1">
+        <CardHeader className="pb-2 relative z-10">
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-lg font-semibold">
+                {item.name}
+              </CardTitle>
+              <Badge variant="outline" className="mt-1 rounded-md">
+                {item.category}
+              </Badge>
+            </div>
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 rounded-xl hover:bg-background"
-              onClick={handleDecrement}
+              onClick={() => onRemove(item.id)}
+              className="h-7 w-7 rounded-sm p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             >
-              <Minus />
-            </Button>
-            <span className="text-sm font-medium text-secondary">
-              {item.amount}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 rounded-xl hover:bg-background"
-              onClick={handleIncrement}
-            >
-              <Plus />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardHeader>
+
+        <CardContent className="space-y-4 relative z-10">
+          <div className="relative aspect-video overflow-hidden rounded-lg flex items-center justify-center">
+            <ImageOrPlaceholder
+              src={item.imageUrl}
+              alt={item.name}
+              width={256}
+              height={256}
+              className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-xl font-bold text-primary">
+              {formatValue(item.value * item.amount)}
+            </span>
+
+            <div className="flex items-center border-muted-foreground/10 gap-2 border bg-accent/40 rounded-xl px-2 py-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-xl hover:bg-background"
+                onClick={handleDecrement}
+              >
+                <Minus />
+              </Button>
+              <span className="text-sm font-medium text-secondary">
+                {item.amount}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-xl hover:bg-background"
+                onClick={handleIncrement}
+              >
+                <Plus />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </LazyLoad>
   );
 }
