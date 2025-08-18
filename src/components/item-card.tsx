@@ -17,6 +17,10 @@ interface ItemCardProps {
   onUpdateQuantity: (itemId: string, quantity: number) => void;
 }
 
+function getItemOpacity(amount: number) {
+  const opacity = Math.min(100, 10 + Math.floor(amount * 5));
+  return opacity;
+}
 export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -45,7 +49,20 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
 
   return (
     <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
-      <CardHeader className="pb-2">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <ImageOrPlaceholder
+          src={item.imageUrl}
+          alt={item.name}
+          width={32}
+          height={32}
+          style={{
+            opacity: `${getItemOpacity(item.amount)}%`,
+          }}
+          className={`w-full h-full object-cover scale-110 blur-3xl`}
+        />
+        <div className="absolute inset-0 bg-background/60" />
+      </div>
+      <CardHeader className="pb-2 relative z-10">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-lg font-semibold">{item.name}</CardTitle>
@@ -64,7 +81,7 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 relative z-10">
         <div className="relative aspect-video overflow-hidden rounded-lg flex items-center justify-center">
           <ImageOrPlaceholder
             src={item.imageUrl}
@@ -80,7 +97,7 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
             {formatValue(item.value * item.amount)}
           </span>
 
-          <div className="flex items-center border-border gap-2 border rounded-xl px-2 py-1">
+          <div className="flex items-center border-muted-foreground/10 gap-2 border bg-accent/40 rounded-xl px-2 py-1">
             <Button
               variant="ghost"
               size="icon"

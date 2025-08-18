@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { StyleHTMLAttributes, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
@@ -11,6 +11,7 @@ interface ImageOrPlaceholderProps {
   width: number;
   height: number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const MISSING_IMAGE_LIGHT_MODE = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWltYWdlLW9mZi1pY29uIGx1Y2lkZS1pbWFnZS1vZmYiPjxsaW5lIHgxPSIyIiB4Mj0iMjIiIHkxPSIyIiB5Mj0iMjIiLz48cGF0aCBkPSJNMTAuNDEgMTAuNDFhMiAyIDAgMSAxLTIuODMtMi44MyIvPjxsaW5lIHgxPSIxMy41IiB4Mj0iNiIgeTE9IjEzLjUiIHkyPSIyMSIvPjxsaW5lIHgxPSIxOCIgeDI9IjIxIiB5MT0iMTIiIHkyPSIxNSIvPjxwYXRoIGQ9Ik0zLjU5IDMuNTlBMS45OSAxLjk5IDAgMCAwIDMgNXYxNGEyIDIgMCAwIDAgMiAyaDE0Yy41NSAwIDEuMDUyLS4yMiAxLjQxLS41OSIvPjxwYXRoIGQ9Ik0yMSAxNVY1YTIgMiAwIDAgMC0yLTJIOSIvPjwvc3ZnPg==`;
@@ -23,6 +24,7 @@ export default function ImageOrPlaceholder({
   width,
   height,
   className,
+  style,
 }: ImageOrPlaceholderProps) {
   const [error, setError] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -39,6 +41,7 @@ export default function ImageOrPlaceholder({
         alt={alt}
         width={width}
         height={height}
+        style={style}
         className={clsx("object-contain", className)}
         onError={() => setError(true)}
         unoptimized
@@ -52,6 +55,7 @@ export default function ImageOrPlaceholder({
       alt={alt}
       width={width}
       height={height}
+      style={style}
       className={clsx("object-contain", className)}
       onError={() => setError(true)}
     />
