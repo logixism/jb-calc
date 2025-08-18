@@ -35,7 +35,7 @@ function serializeCalcItems(value: Array<CalculatorItem>) {
 
 function fullItemFromCalc(
   calcItem: CalculatorItem,
-  allItems: GameItem[]
+  allItems: GameItem[],
 ): FullItem | null {
   const item = allItems?.find((item) => item.id === calcItem.id);
 
@@ -51,7 +51,7 @@ function fullItemFromCalc(
 
 export function valueFromCalcItems(
   items: CalculatorItem[],
-  allItems: GameItem[]
+  allItems: GameItem[],
 ) {
   return items.reduce((sum, calcItem) => {
     const fullItem = fullItemFromCalc(calcItem, allItems);
@@ -104,7 +104,7 @@ export function CalculatorController({
   }
 
   const filteredItems = calculatorItems.filter(
-    (item) => !!fullItemFromCalc(item, allItems)
+    (item) => !!fullItemFromCalc(item, allItems),
   );
   if (filteredItems.length !== calculatorItems.length) {
     setItems(filteredItems);
@@ -121,7 +121,7 @@ export function CalculatorController({
         return prev.map((calcItem) =>
           calcItem.id === item.id
             ? { ...calcItem, amount: calcItem.amount + quantity }
-            : calcItem
+            : calcItem,
         );
       } else {
         return [...prev, { id: item.id, amount: quantity }];
@@ -143,8 +143,10 @@ export function CalculatorController({
 
     setItems((prev) =>
       prev.map((calcItem) =>
-        calcItem.id === itemId ? { ...calcItem, amount: newQuantity } : calcItem
-      )
+        calcItem.id === itemId
+          ? { ...calcItem, amount: newQuantity }
+          : calcItem,
+      ),
     );
     forceCheckOnAnim();
   };

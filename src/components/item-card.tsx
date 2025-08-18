@@ -50,9 +50,56 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
   return (
     <LazyLoad
       unmountIfInvisible
-      placeholder={<div className="h-80 w-70"></div>}
+      placeholder={
+        <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
+          <CardHeader className="pb-2 relative z-10">
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle className="text-lg font-semibold">
+                  Placeholder
+                </CardTitle>
+                <Badge variant="outline" className="mt-1 rounded-md">
+                  Category
+                </Badge>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(item.id)}
+                className="h-7 w-7 rounded-sm p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              ></Button>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4 relative z-10">
+            <div className="relative aspect-video overflow-hidden rounded-lg flex items-center justify-center">
+              <div className="w-full h-full"></div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-xl font-bold text-primary">Value</span>
+
+              <div className="flex items-center border-muted-foreground/10 gap-2 border bg-accent/40 rounded-xl px-2 py-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 rounded-xl hover:bg-background"
+                  onClick={handleDecrement}
+                ></Button>
+                <span className="text-sm font-medium text-secondary">1</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 rounded-xl hover:bg-background"
+                  onClick={handleIncrement}
+                ></Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      }
     >
-      <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg h-80 w-70">
+      <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <ImageOrPlaceholder
             src={item.imageUrl}
