@@ -35,10 +35,35 @@ export function AddItemDialog({
   onItemSelect,
 }: AddItemDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isShiftHeld, setIsShiftHeld] = useState(false);
 
   const { isPending, error, data: items } = useJbvItemQuery();
 
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Shift") {
+        setIsShiftHeld(true);
+      }
+    };
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Shift") {
+        setIsShiftHeld(false);
+      }
+    };
+
+    if (open) {
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      setIsShiftHeld(false);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (open && listRef.current) {
@@ -77,8 +102,10 @@ export function AddItemDialog({
     const item = items.find((i) => i.id === itemId);
     if (item) {
       onItemSelect(item);
-      onOpenChange(false);
-      setSearchQuery("");
+      if (!isShiftHeld) {
+        onOpenChange(false);
+        setSearchQuery("");
+      }
     }
   };
 
@@ -100,7 +127,7 @@ export function AddItemDialog({
               {items.map((item) => (
                 <CommandItem
                   key={item.id}
-                  onSelect={() => handleItemSelect(item.id)}
+                  onSelect={(e) => handleItemSelect(item.id)}
                 >
                   <div className="flex items-center gap-3 w-full">
                     <div className="w-12 h-8 flex items-center justify-center">
