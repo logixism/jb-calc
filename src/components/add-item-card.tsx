@@ -12,7 +12,7 @@ interface AddItemCardProps {
 export function AddItemCard({ onClick }: AddItemCardProps) {
   return (
     <Card
-      className="cursor-pointer hover:shadow-md transition-shadow border-dashed"
+      className="cursor-pointer hover:shadow-md transition-shadow border-dashed h-80 w-70"
       onClick={onClick}
     >
       <CardContent className="flex items-center justify-center h-full">

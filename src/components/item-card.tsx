@@ -50,9 +50,9 @@ export function ItemCard({ item, onRemove, onUpdateQuantity }: ItemCardProps) {
   return (
     <LazyLoad
       unmountIfInvisible
-      placeholder={<div className="h-81 w-71"></div>}
+      placeholder={<div className="h-80 w-70"></div>}
     >
-      <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg">
+      <Card className="relative overflow-hidden rounded-2xl shadow-md transition-all hover:shadow-lg h-80 w-70">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <ImageOrPlaceholder
             src={item.imageUrl}
