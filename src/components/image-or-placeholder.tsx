@@ -51,6 +51,7 @@ export default function ImageOrPlaceholder({
 
   return (
     <Image
+      unoptimized
       src={src}
       alt={alt}
       width={width}
